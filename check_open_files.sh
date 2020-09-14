@@ -53,10 +53,10 @@ PidOfProg="`ps -ef|grep $ProgName|grep -Ewv "grep|$0"|awk '{print $2}'`"
 
 NoOfOpenFiles=$(ls -l /proc/$PidOfProg/fd|wc -l)
 if [ $NoOfOpenFiles -ge $ProgClevel ] ;then
-  MESSAGE="pid $ParentPid has $NoOfOpenFiles open files. "
+  MESSAGE="pid $PidOfProg has $NoOfOpenFiles open files. "
   CRITICAL=yes
 elif [ $NoOfOpenFiles -ge $ProgWlevel ] ;then
-  MESSAGE="$MESSAGE pid $ParentPid has $NoOfOpenFiles open files. "
+  MESSAGE="$MESSAGE pid $PidOfProg has $NoOfOpenFiles open files. "
   WARNING=yes
 else
   MESSAGE="Open FDs = $NoOfOpenFiles PID=$PidOfProg "
