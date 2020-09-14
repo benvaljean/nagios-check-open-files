@@ -64,6 +64,8 @@ else
 fi
 
 # Display Message and exit with correct exit status
-[ "$CRITICAL" = yes ] && echo "FDs CRITICAL: $ProgName $MESSAGE"  && exit $criticalExit
-[ "$WARNING" = yes  ] && echo "FDs WARNING: $ProgName $MESSAGE"  && exit $warningExit
-[ "$OK" = yes  ] && echo "FDs OK: $ProgName $MESSAGE"  && exit $okExit
+perfdata="'Open FDs'=$NoOfOpenFiles;$ProgWlevel;$ProgClevel;0;$ProgClevel"
+# Display Message and exit with correct exit status
+[ "$CRITICAL" = yes ] && echo "FDs CRITICAL: $ProgName $MESSAGE |$perfdata"  && exit $criticalExit
+[ "$WARNING" = yes  ] && echo "FDs WARNING: $ProgName $MESSAGE |$perfdata"  && exit $warningExit
+[ "$OK" = yes  ] && echo "FDs OK: $ProgName $MESSAGE|$perfdata"  && exit $okExit
