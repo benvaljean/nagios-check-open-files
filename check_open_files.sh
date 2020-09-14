@@ -7,7 +7,7 @@
 
 version=1.1.25
 
-BASENAME=$(basename $0)
+BASENAME=$(basename "$0")
 
 # Exit Status
 okExit=0
@@ -48,22 +48,25 @@ done
 MESSAGE=""
 
 # Get the PID of program(s)
-PidOfProg="`ps -ef|grep $ProgName|grep -Ewv "grep|$0"|awk '{print $2}'`"
+PidOfProg="$(ps -ef|grep "$ProgName"|grep -Ewv "grep|$0"|awk '{print $2}')"
 [ -z "$PidOfProg" ] && echo "UNKNOWN: Not able to determine PID of $ProgName" && exit $unknownExit
 
-NoOfOpenFiles=$(ls -l /proc/$PidOfProg/fd|wc -l)
-if [ $NoOfOpenFiles -ge $ProgClevel ] ;then
-  MESSAGE="pid $ParentPid has $NoOfOpenFiles open files. "
+OpenFiles=(/proc/"$PidOfProg"/fd/*)
+NoOfOpenFiles=${#OpenFiles[@]}
+if [ "$NoOfOpenFiles" -ge "$ProgClevel" ] ;then
+  #MESSAGE="pid $ParentPid has $NoOfOpenFiles open files. "
+  MESSAGE="pid $PidOfProg has $NoOfOpenFiles open files. "
   CRITICAL=yes
-elif [ $NoOfOpenFiles -ge $ProgWlevel ] ;then
-  MESSAGE="$MESSAGE pid $ParentPid has $NoOfOpenFiles open files. "
+elif [ "$NoOfOpenFiles" -ge $ProgWlevel ] ;then
+  MESSAGE="$MESSAGE pid $PidOfProg has $NoOfOpenFiles open files. "
   WARNING=yes
 else
   MESSAGE="Open FDs = $NoOfOpenFiles PID=$PidOfProg "
   OK=yes
 fi
 
+perfdata="'Open FDs'=$NoOfOpenFiles;$ProgWlevel;$ProgClevel;0;$ProgClevel"
 # Display Message and exit with correct exit status
-[ "$CRITICAL" = yes ] && echo "FDs CRITICAL: $ProgName $MESSAGE"  && exit $criticalExit
-[ "$WARNING" = yes  ] && echo "FDs WARNING: $ProgName $MESSAGE"  && exit $warningExit
-[ "$OK" = yes  ] && echo "FDs OK: $ProgName $MESSAGE"  && exit $okExit
+[ "$CRITICAL" = yes ] && echo "FDs CRITICAL: $ProgName $MESSAGE |$perfdata"  && exit $criticalExit
+[ "$WARNING" = yes  ] && echo "FDs WARNING: $ProgName $MESSAGE |$perfdata"  && exit $warningExit
+[ "$OK" = yes  ] && echo "FDs OK: $ProgName $MESSAGE|$perfdata"  && exit $okExit
